@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Frase from './components/Frase';
+import Spinner from './components/Spinner';
 import styled from '@emotion/styled';
 
 //styled component
@@ -20,6 +21,11 @@ const Boton = styled.button`
   font-size: 2rem;
   border: 2px solid #000;
   cursor:pointer;
+  transition: all .8s ease;
+
+  :hover {
+    background-size: 400px;
+  }
 `;
 
 function App() {
@@ -27,12 +33,20 @@ function App() {
   //state de frase
   const [frase, setFrase] = useState({});
 
+  //state de loading
+  const [loading, setLoading] = useState(false);
 
+  async function wait(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
   const consultarApi = async () => {
-
+      setLoading(true);
       const api = await fetch('https://breaking-bad-quotes.herokuapp.com/v1/quotes');
       const frase = await api.json();
-      console.log(frase);
+      await wait(1500);
+      setLoading(false);
       setFrase(frase[0]);
   }
 
@@ -43,9 +57,10 @@ function App() {
 
   return (
     <Container>
+       { loading? <Spinner></Spinner> : 
       <Frase
         frase={frase}
-      ></Frase>
+      ></Frase> }
       <Boton
         onClick={consultarApi}
         type="button"
